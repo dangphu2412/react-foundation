@@ -16,7 +16,7 @@ const blogPosts = [
         author: "Sarah Johnson",
         date: "2024-01-15",
         category: "Development",
-        image: "/placeholder.svg?height=200&width=400",
+        image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F15t6fr44mdl8vd73pdpm.png",
         readTime: "5 min read",
     },
     {
@@ -27,7 +27,7 @@ const blogPosts = [
         author: "Mike Chen",
         date: "2024-01-12",
         category: "Technology",
-        image: "/placeholder.svg?height=200&width=400",
+        image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F15t6fr44mdl8vd73pdpm.png",
         readTime: "8 min read",
     },
     {
@@ -37,7 +37,7 @@ const blogPosts = [
         author: "Emily Rodriguez",
         date: "2024-01-10",
         category: "Design",
-        image: "/placeholder.svg?height=200&width=400",
+        image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F15t6fr44mdl8vd73pdpm.png",
         readTime: "6 min read",
     },
     {
@@ -48,7 +48,7 @@ const blogPosts = [
         author: "David Kim",
         date: "2024-01-08",
         category: "Development",
-        image: "/placeholder.svg?height=200&width=400",
+        image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F15t6fr44mdl8vd73pdpm.png",
         readTime: "7 min read",
     },
     {
@@ -58,7 +58,7 @@ const blogPosts = [
         author: "Lisa Wang",
         date: "2024-01-05",
         category: "Design",
-        image: "/placeholder.svg?height=200&width=400",
+        image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F15t6fr44mdl8vd73pdpm.png",
         readTime: "4 min read",
     },
     {
@@ -69,7 +69,7 @@ const blogPosts = [
         author: "Alex Thompson",
         date: "2024-01-03",
         category: "Development",
-        image: "/placeholder.svg?height=200&width=400",
+        image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F15t6fr44mdl8vd73pdpm.png",
         readTime: "9 min read",
     },
 ]
@@ -199,7 +199,7 @@ export function PostsPage() {
                             <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                                 <div className="aspect-video relative overflow-hidden">
                                     <img
-                                        src={post.image || "/placeholder.svg"}
+                                        src={post.image}
                                         alt={post.title}
                                         className="object-cover hover:scale-105 transition-transform duration-300"
                                     />

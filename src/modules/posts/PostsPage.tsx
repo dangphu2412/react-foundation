@@ -1,10 +1,11 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarDays, Plus, Search, User } from "lucide-react"
+import {useState} from "react"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {Input} from "@/components/ui/input"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {CalendarDays, Search, User} from "lucide-react"
+import {AddPostForm} from "@/modules/posts/AddNewPost.tsx";
 
 // Mock data for blog posts
 const blogPosts = [
@@ -79,6 +80,7 @@ export function PostsPage() {
     const [selectedCategory, setSelectedCategory] = useState("all")
     const [selectedAuthor, setSelectedAuthor] = useState("all")
     const [sortBy, setSortBy] = useState("newest")
+    const [posts, setPosts] = useState(blogPosts)
 
     // Get unique categories and authors for filter options
     const categories = [...new Set(blogPosts.map((post) => post.category))]
@@ -114,6 +116,16 @@ export function PostsPage() {
         })
     }
 
+    const handleAddPost = (newPost: any) => {
+        const post = {
+            ...newPost,
+            id: posts.length + 1,
+            date: new Date().toISOString().split("T")[0],
+            image: newPost.image || "/placeholder.svg?height=200&width=400",
+        }
+        setPosts([post, ...posts])
+    }
+
     return (
         <div className="min-h-screen bg-background">
             <div className="container mx-auto px-4 py-8">
@@ -123,10 +135,7 @@ export function PostsPage() {
                         <h1 className="text-3xl font-bold tracking-tight text-start">Blog Posts</h1>
                         <p className="text-muted-foreground mt-2">Discover insights, tutorials, and updates from our team</p>
                     </div>
-                    <Button variant={'outline'} className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        Add New Post
-                    </Button>
+                    <AddPostForm onSubmit={handleAddPost} />
                 </div>
 
                 {/* Filters */}

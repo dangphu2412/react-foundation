@@ -120,10 +120,10 @@ export function PostsPage() {
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Blog Posts</h1>
+                        <h1 className="text-3xl font-bold tracking-tight text-start">Blog Posts</h1>
                         <p className="text-muted-foreground mt-2">Discover insights, tutorials, and updates from our team</p>
                     </div>
-                    <Button className="flex items-center gap-2">
+                    <Button variant={'outline'} className="flex items-center gap-2">
                         <Plus className="h-4 w-4" />
                         Add New Post
                     </Button>

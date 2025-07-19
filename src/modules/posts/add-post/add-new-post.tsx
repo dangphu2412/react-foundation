@@ -2,11 +2,10 @@
 
 import type React from "react"
 import {useState} from "react"
-import {useForm} from "react-hook-form"
+import {Controller, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {z} from "zod"
 import {Button} from "@/components/ui/button.tsx"
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx"
 import {Input} from "@/components/ui/input.tsx"
 import {Label} from "@/components/ui/label.tsx"
 import {Textarea} from "@/components/ui/textarea.tsx"
@@ -48,7 +47,7 @@ export function AddPostForm({ onSubmit, trigger }: AddPostFormProps) {
     const categories = ["Development", "Design", "Technology", "Business", "Tutorial", "News"]
     const authors = ["Sarah Johnson", "Mike Chen", "Emily Rodriguez", "David Kim", "Lisa Wang", "Alex Thompson"]
 
-    const form = useForm<BlogPostFormData>({
+    const form = useForm({
         resolver: zodResolver(blogPostSchema),
         defaultValues: {
             title: "",
@@ -65,13 +64,10 @@ export function AddPostForm({ onSubmit, trigger }: AddPostFormProps) {
     const {
         handleSubmit,
         control,
-        watch,
+        getValues,
         setValue,
-        formState: { errors, isSubmitting },
+        formState: { isSubmitting },
     } = form
-
-    // Watch form values for real-time updates
-    const watchedValues = watch()
 
     const estimateReadTime = (content: string) => {
         const wordsPerMinute = 200
@@ -89,16 +85,20 @@ export function AddPostForm({ onSubmit, trigger }: AddPostFormProps) {
     }
 
     const addTag = () => {
-        if (currentTag.trim() && !watchedValues.tags.includes(currentTag.trim())) {
-            const newTags = [...watchedValues.tags, currentTag.trim()]
+        const tags = getValues('tags') ?? [];
+
+        if (currentTag.trim() && !tags.includes(currentTag.trim())) {
+            const newTags = [...tags, currentTag.trim()]
             setValue("tags", newTags)
             setCurrentTag("")
         }
     }
 
     const removeTag = (tagToRemove: string) => {
-        const newTags = watchedValues.tags.filter((tag) => tag !== tagToRemove)
-        setValue("tags", newTags)
+        setValue("tags",
+            (getValues('tags') ?? [])
+            .filter((tag) => tag !== tagToRemove)
+        )
     }
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -143,7 +143,7 @@ export function AddPostForm({ onSubmit, trigger }: AddPostFormProps) {
                 )}
             </DialogTrigger>
 
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="min-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">Create New Blog Post</DialogTitle>
                 </DialogHeader>
@@ -240,28 +240,37 @@ export function AddPostForm({ onSubmit, trigger }: AddPostFormProps) {
                                 {/* Tags */}
                                 <div className="space-y-2">
                                     <Label htmlFor="tags">Tags</Label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            id="tags"
-                                            value={currentTag}
-                                            onChange={(e) => setCurrentTag(e.target.value)}
-                                            onKeyPress={handleKeyPress}
-                                            placeholder="Add a tag..."
-                                        />
-                                        <Button type="button" onClick={addTag} variant="outline" size="sm">
-                                            Add
-                                        </Button>
-                                    </div>
-                                    {watchedValues.tags && watchedValues.tags.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mt-2">
-                                            {watchedValues.tags.map((tag) => (
-                                                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                                                    {tag}
-                                                    <X className="h-3 w-3 cursor-pointer hover:text-red-500" onClick={() => removeTag(tag)} />
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    )}
+
+                                    <Controller
+                                        control={control}
+                                        name={'tags'}
+                                        render={({ field  }) => {
+                                            return <>
+                                                 <div className="flex gap-2">
+                                                     <Input
+                                                         id="tags"
+                                                         value={currentTag}
+                                                         onChange={(e) => setCurrentTag(e.target.value)}
+                                                         onKeyDown={handleKeyPress}
+                                                         placeholder="Add a tag..."
+                                                     />
+                                                     <Button type="button" onClick={addTag} variant="outline" size="sm">
+                                                         Add
+                                                     </Button>
+                                                 </div>
+
+                                                 <div className="flex flex-wrap gap-2 mt-2">
+                                                     {field.value?.map((tag) => (
+                                                         <Badge key={tag} variant="secondary" className="flex items-center gap-1" >
+                                                             {tag}
+                                                             <span onClick={() => removeTag(tag)}>
+                                                                 <X className="h-3 w-3 cursor-pointer hover:text-red-500"  />
+                                                             </span>
+                                                         </Badge>
+                                                     ))}
+                                                 </div>
+                                             </>
+                                        }} />
                                 </div>
 
                                 {/* Featured Image */}
@@ -334,23 +343,6 @@ export function AddPostForm({ onSubmit, trigger }: AddPostFormProps) {
                                         </FormItem>
                                     )}
                                 />
-
-                                {/* Preview Card */}
-                                {watchedValues.title && watchedValues.excerpt && (
-                                    <Card className="mt-4">
-                                        <CardHeader>
-                                            <CardTitle className="text-sm text-muted-foreground">Preview</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-2">
-                                            <h3 className="font-semibold">{watchedValues.title}</h3>
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{watchedValues.excerpt}</p>
-                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                {watchedValues.category && <Badge variant="secondary">{watchedValues.category}</Badge>}
-                                                {watchedValues.readTime && <span>{watchedValues.readTime}</span>}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )}
                             </div>
                         </div>
 

@@ -1,4 +1,4 @@
-import {AddPostForm} from "@/modules/posts/add-post/AddNewPost.tsx";
+import {AddPostForm} from "@/modules/posts/add-post/add-new-post.tsx";
 
 type PostListHeaderProps = {
     onPostSave: (newPost: any) => void;

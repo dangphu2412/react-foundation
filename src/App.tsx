@@ -1,7 +1,8 @@
 import './App.css'
 import {type FC, useEffect, useState} from "react";
-import {Button} from "@/components/ui/button.tsx";
-import {PostsPage} from "@/modules/posts/PostsPage.tsx";
+import {PostsPage} from "@/modules/posts/post-list/PostsPage.tsx";
+import {RefTrainingForm} from "@/modules/ref-training-form/ref-training-form.tsx";
+import {ListTraining} from "@/modules/list-training/list-training.tsx";
 
 type Props = {
     children: FC<{ path: string }>;
@@ -31,7 +32,15 @@ function App() {
     <Router>
         {({ path }) => {
             if (path === '/posts/add') {
-                return <Button>Add</Button>
+                return <div>Hello add</div>
+            }
+
+            if (path === '/ref-training') {
+                return <RefTrainingForm />
+            }
+
+            if (path === '/list-training') {
+                return <ListTraining />
             }
 
             return <PostsPage />

@@ -1,6 +1,6 @@
 import './App.css'
 import {type FC, useEffect, useState} from "react";
-import {PostsPage} from "@/modules/posts/post-list/PostsPage.tsx";
+import {PostListEntryPage} from "@/modules/posts/post-list/post-list-entry-page.tsx";
 import {RefTrainingForm} from "@/modules/ref-training-form/ref-training-form.tsx";
 import {ListTraining} from "@/modules/list-training/list-training.tsx";
 
@@ -43,7 +43,7 @@ function App() {
                 return <ListTraining />
             }
 
-            return <PostsPage />
+            return <PostListEntryPage />
         }}
     </Router>
   )

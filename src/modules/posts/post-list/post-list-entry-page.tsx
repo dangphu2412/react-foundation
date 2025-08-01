@@ -1,7 +1,8 @@
-import {useEffect, useState} from "react"
-import {PostList} from "@/modules/posts/post-list/list/post-list.tsx";
+import {useCallback, useEffect, useMemo, useState} from "react"
+import {MemoizedPostList, PostList} from "@/modules/posts/post-list/list/post-list.tsx";
 import {PostListHeader} from "@/modules/posts/post-list/header/post-header.tsx";
 import {PostFilter} from "@/modules/posts/post-list/filter/post-filter.tsx";
+import {XIcon} from "lucide-react";
 
 type Post = {
     id: number,
@@ -82,19 +83,30 @@ const blogPosts: Post[] = [
     },
 ]
 
+function getPosts() {
+    return new Promise<Array<Post>>((resolve) => {
+        setTimeout(() => {
+            resolve(blogPosts)
+        }, 500)
+    })
+}
+
 export function PostListEntryPage() {
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedCategory, setSelectedCategory] = useState("all")
     const [selectedAuthor, setSelectedAuthor] = useState("all")
     const [sortBy, setSortBy] = useState("newest")
     const [posts, setPosts] = useState<Post[]>([])
+    const [isLoading, setIsLoading] = useState(false);
+    const [isOpenBanner, setIsOpenBanner] = useState(true);
 
     const categories = [...new Set(blogPosts.map((post) => post.category))]
     const authors = [...new Set(blogPosts.map((post) => post.author))]
 
     // Filter and sort posts
-    const filteredPosts = blogPosts
-        .filter((post) => {
+    const filteredPosts = useMemo(() => {
+        console.log('Compute')
+        function filterPostPredicate(post: Post) {
             const matchesSearch =
                 post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
@@ -102,17 +114,21 @@ export function PostListEntryPage() {
             const matchesAuthor = selectedAuthor === "all" || post.author === selectedAuthor
 
             return matchesSearch && matchesCategory && matchesAuthor
-        })
-        .toSorted((a, b) => {
-            if (sortBy === "newest") {
-                return new Date(b.date).getTime() - new Date(a.date).getTime()
-            } else if (sortBy === "oldest") {
-                return new Date(a.date).getTime() - new Date(b.date).getTime()
-            } else if (sortBy === "title") {
-                return a.title.localeCompare(b.title)
-            }
-            return 0
-        })
+        }
+
+        return posts
+            .filter(filterPostPredicate)
+            .toSorted((a, b) => {
+                if (sortBy === "newest") {
+                    return new Date(b.date).getTime() - new Date(a.date).getTime()
+                } else if (sortBy === "oldest") {
+                    return new Date(a.date).getTime() - new Date(b.date).getTime()
+                } else if (sortBy === "title") {
+                    return a.title.localeCompare(b.title)
+                }
+                return 0
+            })
+    }, [posts, searchTerm, selectedAuthor, selectedCategory, sortBy])
 
     function add(newPost: Post) {
         const post = {
@@ -124,19 +140,23 @@ export function PostListEntryPage() {
         setPosts([post, ...posts])
     }
 
-    function clearFilters() {
+    const clearFilters = useCallback(() => {
         setSearchTerm("")
         setSelectedCategory("all")
         setSelectedAuthor("all")
-    }
+    }, []);
 
     useEffect(function syncAPIPosts() {
-        setPosts(blogPosts)
+        setIsLoading(true)
+        getPosts().then(posts => {
+            setPosts(posts);
+            setIsLoading(false);
+        }).catch(() => setIsLoading(false));
     }, []);
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 space-y-2">
                 <PostListHeader onPostSave={add} />
 
                 <PostFilter
@@ -158,7 +178,16 @@ export function PostListEntryPage() {
                     </p>
                 </div>
 
-                <PostList posts={filteredPosts} onClearFilterWhenNoItemFound={clearFilters} />
+                {isOpenBanner && <div className={'flex gap-2'} onClick={() => setIsOpenBanner(false)}>
+                    Banner: We are about to release a new feature
+                    <XIcon/>
+                </div>}
+
+                <MemoizedPostList
+                    isLoading={isLoading}
+                    posts={filteredPosts}
+                    onClearFilterWhenNoItemFound={clearFilters}
+                />
             </div>
         </div>
     )

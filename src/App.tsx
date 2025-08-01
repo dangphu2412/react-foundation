@@ -1,36 +1,36 @@
 import './App.css'
-import {type FC, useEffect, useState} from "react";
 import {PostListEntryPage} from "@/modules/posts/post-list/post-list-entry-page.tsx";
-import {RefTrainingForm} from "@/modules/ref-training-form/ref-training-form.tsx";
 import {ListTraining} from "@/modules/list-training/list-training.tsx";
+import {HookFormZustand, RefTrainingForm} from "@/modules/ref-training-form/ref-training-form.tsx";
+import {FileUpload} from "@/modules/file-upload/file-upload.tsx";
+import {type FC, useEffect, useState} from "react";
+import {AtomicTraining} from "@/modules/atomic-training/atomic-training.tsx";
 
-type Props = {
-    children: FC<{ path: string }>;
+type RouterProps = {
+  children: FC<{ path: string | null }>;
 }
 
-function Router({ children }: Props) {
-    const [path, setPath] = useState(window.location.pathname);
+function Router({ children }: RouterProps) {
+  const [path, setPath] = useState<string>(window.location.pathname);
 
-    useEffect(() => {
-        function onPopStateChange() {
-            setPath(window.location.pathname)
-        }
+  useEffect(() => {
+    function loadPath() {
+      console.log(window.location.pathname);
+      setPath(window.location.pathname);
+    }
+    window.addEventListener('popstate', loadPath);
 
-        window.addEventListener('popstate', onPopStateChange)
+    return () => window.removeEventListener('popstate', loadPath);
+  }, []);
 
-
-        return () => {
-            window.removeEventListener('popstate', onPopStateChange)
-        }
-    }, []);
-
-    return <>{children({ path })}</>
+  return <>{children({ path: path })}</>
 }
 
 function App() {
   return (
     <Router>
         {({ path }) => {
+            console.log(path);
             if (path === '/posts/add') {
                 return <div>Hello add</div>
             }
@@ -39,8 +39,20 @@ function App() {
                 return <RefTrainingForm />
             }
 
+            if (path === '/form') {
+              return <HookFormZustand />
+            }
+
             if (path === '/list-training') {
                 return <ListTraining />
+            }
+
+            if (path === '/file') {
+              return <FileUpload />
+            }
+
+            if (path === '/atomic') {
+              return <AtomicTraining/>
             }
 
             return <PostListEntryPage />

@@ -183,7 +183,7 @@ export function PostListEntryPage() {
                     <XIcon/>
                 </div>}
 
-                <MemoizedPostList
+                <PostList
                     isLoading={isLoading}
                     posts={filteredPosts}
                     onClearFilterWhenNoItemFound={clearFilters}

@@ -5,6 +5,7 @@ import {HookFormZustand, RefTrainingForm} from "@/modules/ref-training-form/ref-
 import {FileUpload} from "@/modules/file-upload/file-upload.tsx";
 import {type FC, useEffect, useState} from "react";
 import {AtomicTraining} from "@/modules/atomic-training/atomic-training.tsx";
+import {ContextTraining} from "@/modules/context-training/ContextTraining.tsx";
 
 type RouterProps = {
   children: FC<{ path: string | null }>;
@@ -53,6 +54,10 @@ function App() {
 
             if (path === '/atomic') {
               return <AtomicTraining/>
+            }
+
+            if (path === '/context') {
+              return <ContextTraining />
             }
 
             return <PostListEntryPage />

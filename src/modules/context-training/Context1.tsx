@@ -1,12 +1,12 @@
 import shortid from 'shortid';
 import {createContext, type PropsWithChildren, useContext, useReducer, useRef, useState} from "react";
 
-const TasksContext = createContext<Task[]>([]);
-const TaskDispatchContext = createContext<TaskDispatch>(() => {});
-
+type Task = {
+    id: string;
+    name: string;
+}
 interface TaskDispatch {
-    (action: AddAction): void;
-    (action: RemoveAction): void;
+    (action: AddAction | RemoveAction): void;
 }
 
 type AddAction = {
@@ -19,7 +19,17 @@ type RemoveAction = {
     id: string;
 }
 
-function RootProvider({ children }: PropsWithChildren) {
+type TaskState = {
+    tasks: Task[],
+    dispatch: TaskDispatch,
+}
+
+const TasksContext = createContext<TaskState>({
+    tasks: [],
+    dispatch: () => {}
+});
+
+export function Context1() {
     const [tasks, dispatch] = useReducer<Task[], any>((state, action: AddAction | RemoveAction) => {
         switch (action.type) {
             case 'add':
@@ -30,57 +40,17 @@ function RootProvider({ children }: PropsWithChildren) {
                 return [];
         }
     }, [])
-    console.log('re-render provider')
 
-    return <TasksContext.Provider value={tasks}>
-        <TaskDispatchContext.Provider value={dispatch}>
-            {children}
-        </TaskDispatchContext.Provider>
-    </TasksContext.Provider>
-}
-
-export function ContextTraining() {
-    return <RootProvider>
+    return <TasksContext.Provider value={{tasks, dispatch}}>
         <h1 className={'text-2xl'}>Day off in Kyoto</h1>
         <AddTask />
         <TaskList />
-    </RootProvider>
-
-    // return <TestC>
-    //     <TestA />
-    //     <TestB />
-    // </TestC>
-}
-
-function TestA() {
-    const [a, setA] = useState('')
-    console.log('render A')
-
-    return <input value={a} onChange={e => setA(e.target.value)}/>
-}
-
-function TestB() {
-    const [b, setB] = useState('')
-    console.log('render b')
-
-    return <input value={b} onChange={e => setB(e.target.value)}/>
-}
-
-function TestC({ children }: PropsWithChildren) {
-    const [b, setB] = useState('')
-
-    console.log('render c')
-    return <div>
-        <input value={b} onChange={e => setB(e.target.value)} />
-        {children}
-        {/*<TestA />*/}
-        {/*<TestB />*/}
-    </div>
+    </TasksContext.Provider>
 }
 
 function AddTask() {
     const inputRef = useRef<HTMLInputElement>(null);
-    const dispatch = useContext(TaskDispatchContext);
+    const {dispatch} = useContext(TasksContext);
 
     function add() {
         dispatch({
@@ -104,14 +74,8 @@ function AddTask() {
     )
 }
 
-type Task = {
-    id: string;
-    name: string;
-}
-
 function TaskList() {
-    const tasks = useContext(TasksContext);
-    const dispatch = useContext(TaskDispatchContext);
+    const {tasks, dispatch} = useContext(TasksContext);
 
     console.log('render lists')
 
